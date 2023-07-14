@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "chroma_migrate"
+dynamic = ["version"]
+authors = [
+    {name = "Jeff Huber", email = "jeff@trychroma.com"},
+    {name = "Hammad Bashir", email = "hammad@trychroma.com"},
+]
+description = "A tool for migrating to chroma versions >= 0.4.0"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+]
+keywords = ["chroma", "migrate"]
+
+dependencies = [
+    'clickhouse-connect==0.6.6',
+    'duckdb==0.7.1',
+    'tqdm',
+    'chromadb',
+    'bullet',
+]
+
+[project.scripts]
+chroma-migrate = "chroma_migrate"

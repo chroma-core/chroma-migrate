@@ -26,16 +26,28 @@ We are migrating:
 
 `Index store`: Previously Chroma saved the **entire** index on every write. This because painfully slow when the collection grew to a reasonable amount of embeddings. The new index store saves *only the change* and should scale seamlessly! 
 
+Here are the 9-possible migration paths, and any notes, if applicable.
+
+| From 👇&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;➡️&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;To 👉 | Persistance | Dockerized locally | Dockerized remote |
+| -------- | -------- | -------- | -------- |
+| Persistance| ✅ | ✅ | 1️⃣ |
+| Dockerized locally| ✅| 2️⃣| 1️⃣|
+| Dockerized remote| ✅| ✅| 1️⃣|
+
+1️⃣ - Make sure to configure any auth headers correctly
+
+2️⃣ - Run both the existing version of Chroma and the new `0.4.0` version of Chroma at same time. Run the new version on a new port.
+
 [Embed video here]()
+
+1. `pip` install this utility. `pip install chroma_migrate`
 
 1. Running the CLI. In your terminal run:
 
 ```
-chroma_migration
+chroma_migrate
 ```
 
 2. Choose whether the data you want to migrate is locally on disk (duckdb) or on a server (clickhouse)
 
 3. Choose where you want to write the new data to. 
-
-> Note: if you want to upgrade a server... you may need to run `0.4.0` in a docker container ..... (this is annoying. )

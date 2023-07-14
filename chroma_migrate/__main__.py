@@ -54,7 +54,7 @@ if target_config == "Running on a remote server":
     prompts.append(chroma_port)
 
 if target_config == "Running locally":
-    chroma_persist_directory = Input("What is the path you would like your data to be stored in?", default = "./chroma", word_color = colors.foreground["yellow"])
+    chroma_persist_directory = Input("What is the path you would like your data to be stored in?", default = "./chroma_new", word_color = colors.foreground["yellow"])
     prompts.append(chroma_persist_directory)
 
 cli = SlidePrompt(prompts)

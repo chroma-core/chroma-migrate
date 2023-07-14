@@ -38,7 +38,7 @@ def migrate_from_duckdb(api: API, persist_directory: str):
     # -------------------------------------
     
     # Load the embeddings into duckdb
-    print("Creating Embeddings")
+    print("Migrating existing embeddings...")
     embeddings_parquet_path = os.path.join(persist_directory, "chroma-embeddings.parquet")
     conn.execute(
         "CREATE TABLE embeddings (collection_uuid STRING, uuid STRING, embedding DOUBLE[], document STRING, id STRING, metadata STRING);"
@@ -57,6 +57,6 @@ def migrate_from_duckdb(api: API, persist_directory: str):
         collection = collection_uuid_to_chroma_collection[collection_uuid]
         collection.add(id, embedding, metadata, document)
 
-    return collections, embeddings
+    print(f"Migrated {len(collections)} collections and {embeddings.shape[0]} embeddings")
 
 

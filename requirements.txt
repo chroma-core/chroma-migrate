@@ -1,6 +1,4 @@
 clickhouse-connect==0.6.6
 duckdb==0.7.1
 tqdm
-chromadb @ git+https://github.com/chroma-core/chroma@119f418b20b71dc83750ed5b166d3e545ca34b01
-bullet
-
+chromadb @ git+https://github.com/chroma-core/chroma@a18a5a606d76942cb0fd06a5bc1499f7fcf397cc

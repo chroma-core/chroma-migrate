@@ -86,11 +86,10 @@ def run_cli():
 
     api = None
     if target_config == "Running locally":
-        # TODO: change to new api
         for prompt, answer in result:
             if prompt == "What is the path you would like your data to be stored in?":
                 persist_directory = answer
-        api = chromadb.Client(Settings(chroma_db_impl="duckdb+parquet", persist_directory=persist_directory))
+        api = chromadb.PersistentClient(path=persist_directory)
 
     if target_config == "Running on a remote server":
         for prompt, answer in result:
@@ -98,7 +97,7 @@ def run_cli():
                 chroma_host = answer
             if prompt == "What is the port of your chroma server":
                 chroma_port = answer
-        api = chromadb.Client(Settings(chroma_api_impl="rest", chroma_host=chroma_host, chroma_port=chroma_port))
+        api = chromadb.HttpClient(host=chroma_host, port=chroma_port)
 
     if current_config == "DuckDB":
         for prompt, answer in result:

@@ -8,8 +8,27 @@ from chromadb.config import Settings
 from chroma_migrate.import_clickhouse import migrate_from_clickhouse
 from chroma_migrate.import_duckdb import migrate_from_duckdb
 
+_logo = """
+                \033[38;5;069m(((((((((    \033[38;5;203m(((((\033[38;5;220m####         
+             \033[38;5;069m(((((((((((((\033[38;5;203m(((((((((\033[38;5;220m#########    
+           \033[38;5;069m(((((((((((((\033[38;5;203m(((((((((((\033[38;5;220m###########  
+         \033[38;5;069m((((((((((((((\033[38;5;203m((((((((((((\033[38;5;220m############ 
+        \033[38;5;069m(((((((((((((\033[38;5;203m((((((((((((((\033[38;5;220m#############
+        \033[38;5;069m(((((((((((((\033[38;5;203m((((((((((((((\033[38;5;220m#############
+         \033[38;5;069m((((((((((((\033[38;5;203m(((((((((((((\033[38;5;220m##############
+         \033[38;5;069m((((((((((((\033[38;5;203m((((((((((((\033[38;5;220m############## 
+           \033[38;5;069m((((((((((\033[38;5;203m(((((((((((\033[38;5;220m#############   
+             \033[38;5;069m((((((((\033[38;5;203m((((((((\033[38;5;220m##############     
+                \033[38;5;069m(((((\033[38;5;203m((((    \033[38;5;220m#########\033[0m            
+
+    """
+
 
 def run_cli():
+    print(_logo)
+    print("Welcome to the Chroma Migration Tool")
+    print("This tool will help you migrate your data from versions less than v0.4.0 to the latest version of Chroma")
+
     cli = SlidePrompt(
         [
             Bullet("Which configuration of chroma is your data currently stored in? ",

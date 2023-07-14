@@ -32,11 +32,11 @@ Here are the 9-possible migration paths, and any notes, if applicable.
 | -------- | -------- | -------- | -------- |
 | Persistance| ✅ | ✅ | 1️⃣ |
 | Dockerized locally| ✅| 2️⃣| 1️⃣|
-| Dockerized remote| ✅| ✅| 1️⃣|
+| Dockerized remote| ✅| ✅| 1️⃣ 2️⃣|
 
 1️⃣ - Make sure to configure any auth headers correctly
 
-2️⃣ - Run both the existing version of Chroma and the new `0.4.0` version of Chroma at same time. Run the new version on a new port.
+2️⃣ - Run both the existing version of Chroma and the new `0.4.0` version of Chroma at same time. Run the new version on a new port if local.
 
 [Embed video here]()
 

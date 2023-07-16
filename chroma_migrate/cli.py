@@ -27,8 +27,11 @@ _logo = """
 
 def run_cli():
     print(_logo)
+    print("\033[1m") # Bold
     print("Welcome to the Chroma Migration Tool")
-    print("This tool will help you migrate your data from versions less than v0.4.0 to the latest version of Chroma")
+    print("\033[0m") # Reset
+    print("This tool will help you migrate your data from versions less than v0.4.0 to the latest version of Chroma.")
+    print("Please visit https://docs.trychroma.com/migration for more information or join our discord channel #migrations https://discord.gg/8g5FESbj for help")
 
     cli = SlidePrompt(
         [

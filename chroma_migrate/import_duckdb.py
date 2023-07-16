@@ -26,6 +26,10 @@ def migrate_from_duckdb(api: API, persist_directory: str):
     # Read the collections from duckdb
     collections = conn.execute("SELECT uuid, name, metadata FROM collections").fetchall()
 
+    if len(collections) == 0:
+        print("No collections found, exiting...")
+        return
+
     # Create the collections in chromadb
     print("Migrating existing collections...")
     collection_uuid_to_chroma_collection: Dict[str, Collection] = {}

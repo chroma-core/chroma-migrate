@@ -16,6 +16,10 @@ def migrate_from_clickhouse(api: API, host: str, port: int):
     # Read the collections from clickhouse
     collections = conn.query("SELECT uuid, name, metadata FROM collections").result_rows
 
+    if len(collections) == 0:
+        print("No collections found, exiting...")
+        return
+
     # Create the collections in chromadb
     print("Migrating existing collections...")
     collection_uuid_to_chroma_collection: Dict[str, Collection] = {}

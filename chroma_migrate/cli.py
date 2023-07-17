@@ -2,6 +2,8 @@ from bullet import Bullet, SlidePrompt, Check, Input, YesNo, Numbers
 from bullet import styles
 from bullet import colors
 
+import json
+
 import chromadb
 from chromadb.config import Settings
 
@@ -26,12 +28,13 @@ _logo = """
 
 
 def run_cli():
+    print("\033[1m") # Bold logo
     print(_logo)
     print("\033[1m") # Bold
     print("Welcome to the Chroma Migration Tool")
     print("\033[0m") # Reset
     print("This tool will help you migrate your data from versions less than v0.4.0 to the latest version of Chroma.")
-    print("Please visit https://docs.trychroma.com/migration for more information or join our discord channel #migrations https://discord.gg/8g5FESbj for help")
+    print("Please visit https://docs.trychroma.com/migration for more information or join our discord channel #migrations at https://discord.gg/8g5FESbj for help")
 
     cli = SlidePrompt(
         [
@@ -46,7 +49,7 @@ def run_cli():
                 word_on_switch = colors.foreground["white"]
             ),
             Bullet("Where would you like to migrate your data to?",
-                choices = ["Files I can use on my local machine with chroma, or upload to a remote server that runs chroma", "A chroma server that I can access via HTTP "],
+                choices = ["Files I can use on my local machine with chroma, or upload to a remote server that runs chroma", "A chroma server that I can access via HTTP"],
                 bullet = " >",
                 margin = 2,
                 bullet_color = colors.bright(colors.foreground["cyan"]),
@@ -62,7 +65,8 @@ def run_cli():
     result = cli.launch()
     current_config = result[0][1]
     target_config = result[1][1]
-
+    
+    # TODO: clean up how we extract the answers and tie answers to prompts. This is brittle but works for a first pass!
     prompts = []
     if "Clickhouse" in current_config:
         clickhouse_host = Input("What is the ip/hostname of your clickhouse server", default = "localhost", word_color = colors.foreground["yellow"])
@@ -80,21 +84,23 @@ def run_cli():
         prompts.append(chroma_host)
         prompts.append(chroma_port)
 
-    if target_config == "Running on a remote server":
+    if target_config == "A chroma server that I can access via HTTP":
         chroma_host = Input("What is the ip/hostname of your chroma server", default = "localhost", word_color = colors.foreground["yellow"])
         chroma_port = Input("What is the port of your chroma server", default = "8000", word_color = colors.foreground["yellow"])
+        chroma_headers = Input("What headers would you like to use to authenticate with your chroma server? (JSON format)", default = "{}", word_color = colors.foreground["yellow"])
+        target_chroma = "REMOTE"
         prompts.append(chroma_host)
         prompts.append(chroma_port)
+        prompts.append(chroma_headers)
 
-    if target_config == "Running locally":
+    if target_config == "Files I can use on my local machine with chroma, or upload to a remote server that runs chroma":
         chroma_persist_directory = Input("What is the path you would like your data to be stored in?", default = "./chroma_migrated", word_color = colors.foreground["yellow"])
+        target_chroma = "LOCAL"
         prompts.append(chroma_persist_directory)
 
     cli = SlidePrompt(prompts)
     print('\n')
     result = cli.launch()
-
-    target_chroma = "LOCAL" if target_config == "Running locally" else "REMOTE"
 
     api = None
     if target_chroma == "LOCAL":
@@ -109,7 +115,13 @@ def run_cli():
                 chroma_host = answer
             if prompt == "What is the port of your chroma server":
                 chroma_port = answer
-        api = chromadb.HttpClient(host=chroma_host, port=chroma_port)
+            if prompt == "What headers would you like to use to authenticate with your chroma server? (JSON format)":
+                try:
+                    chroma_headers = json.loads(answer)
+                except Exception:
+                    print("Invalid JSON format for headers")
+                    exit(1)
+        api = chromadb.HttpClient(host=chroma_host, port=chroma_port, headers=chroma_headers)
 
     if "DuckDB" in current_config:
         for prompt, answer in result:

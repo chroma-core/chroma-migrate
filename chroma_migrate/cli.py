@@ -94,14 +94,16 @@ def run_cli():
     print('\n')
     result = cli.launch()
 
+    target_chroma = "LOCAL" if target_config == "Running locally" else "REMOTE"
+
     api = None
-    if target_config == "Running locally":
+    if target_chroma == "LOCAL":
         for prompt, answer in result:
             if prompt == "What is the path you would like your data to be stored in?":
                 persist_directory = answer
         api = chromadb.PersistentClient(path=persist_directory)
 
-    if target_config == "Running on a remote server":
+    if target_chroma == "REMOTE":
         for prompt, answer in result:
             if prompt == "What is the ip/hostname of your chroma server":
                 chroma_host = answer
@@ -131,3 +133,18 @@ def run_cli():
                 chroma_port = answer
         from_chroma = chromadb.HttpClient(host=chroma_host, port=chroma_port)
         migrate_from_remote_chroma(from_chroma, api)
+
+    if target_chroma == "LOCAL":
+        print(f"Your data has been migrated to: {persist_directory}!")
+        print("\n")
+        print("You can now instantiate a chroma client with the following code:")
+        print("import chromadb")
+        print("api = chromadb.PersistentClient(path=\"" + persist_directory + "\")")
+    
+    if target_chroma == "REMOTE":
+        print(f"Your data has been migrated to: {chroma_host}:{chroma_port}!")
+        print("\n")
+        print("You can now instantiate a chroma client with the following code:")
+        print("import chromadb")
+        print("api = chromadb.HttpClient(host=\"" + chroma_host + "\", port=\"" + chroma_port + "\")")
+

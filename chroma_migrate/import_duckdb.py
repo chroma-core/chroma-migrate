@@ -6,6 +6,8 @@ from chromadb.api.models.Collection import Collection
 from tqdm import tqdm
 import json
 
+from chroma_migrate.utils import validate_collection_metadata
+
 def migrate_from_duckdb(api: API, persist_directory: str):
     # Load all the collections from the parquet files
     if not os.path.exists(persist_directory):
@@ -29,6 +31,12 @@ def migrate_from_duckdb(api: API, persist_directory: str):
     if len(collections) == 0:
         print("No collections found, exiting...")
         return
+
+    print("Validating collection metadata...")
+    for collection in collections:
+        uuid, name, metadata = collection
+        metadata = json.loads(metadata)
+        validate_collection_metadata(metadata)
 
     # Create the collections in chromadb
     print("Migrating existing collections...")

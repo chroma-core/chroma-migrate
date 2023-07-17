@@ -5,6 +5,8 @@ from chromadb.api.models.Collection import Collection
 from tqdm import tqdm
 import json
 
+from chroma_migrate.utils import validate_collection_metadata
+
 
 def migrate_from_clickhouse(api: API, host: str, port: int):
     conn = clickhouse_connect.get_client(
@@ -19,6 +21,11 @@ def migrate_from_clickhouse(api: API, host: str, port: int):
     if len(collections) == 0:
         print("No collections found, exiting...")
         return
+
+    print("Validating collection metadata...")
+    for collection in collections:
+        metadata = json.loads(collection[2])
+        validate_collection_metadata(metadata)
 
     # Create the collections in chromadb
     print("Migrating existing collections...")

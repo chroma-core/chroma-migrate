@@ -4,6 +4,8 @@ from chromadb.api.models.Collection import Collection
 from tqdm import tqdm
 from more_itertools import chunked
 
+from chroma_migrate.utils import validate_collection_metadata
+
 CHUNK_SIZE = 1000
 
 def migrate_from_remote_chroma(from_api: API, to_api: API):
@@ -14,6 +16,10 @@ def migrate_from_remote_chroma(from_api: API, to_api: API):
     if len(from_collections) == 0:
         print("No collections found, exiting...")
         return
+
+    print("Validating collection metadata...")
+    for collection in from_collections:
+        validate_collection_metadata(collection.metadata)
 
     print("Migrating existing collections...")
     from_collection_to_to_collection: Dict[str, Collection] = {}

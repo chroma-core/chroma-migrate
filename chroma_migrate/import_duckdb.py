@@ -6,7 +6,7 @@ from chromadb.api.models.Collection import Collection
 from tqdm import tqdm
 import json
 
-from chroma_migrate.utils import validate_collection_metadata
+from chroma_migrate.utils import migrate_embedding_metadata, validate_collection_metadata
 
 def migrate_from_duckdb(api: API, persist_directory: str):
     # Load all the collections from the parquet files
@@ -33,18 +33,18 @@ def migrate_from_duckdb(api: API, persist_directory: str):
         return
 
     print("Validating collection metadata...")
+    from_collection_to_metadata = {}
     for collection in collections:
         uuid, name, metadata = collection
         metadata = json.loads(metadata)
-        validate_collection_metadata(metadata)
+        from_collection_to_metadata[name] = validate_collection_metadata(metadata)
 
     # Create the collections in chromadb
     print("Migrating existing collections...")
     collection_uuid_to_chroma_collection: Dict[str, Collection] = {}
     for collection in collections:
         uuid, name, metadata = collection
-        metadata = json.loads(metadata)
-        coll = api.get_or_create_collection(name, metadata)
+        coll = api.get_or_create_collection(name, from_collection_to_metadata[name])
         collection_uuid_to_chroma_collection[uuid] = coll
 
     # -------------------------------------
@@ -66,6 +66,7 @@ def migrate_from_duckdb(api: API, persist_directory: str):
     for record in tqdm(embeddings.itertuples(index=False), total=embeddings.shape[0]):
         uuid, collection_uuid, id, embedding, document, metadata = record
         metadata = json.loads(metadata)
+        metadata = migrate_embedding_metadata(metadata)
         collection = collection_uuid_to_chroma_collection[collection_uuid]
         collection.add(id, embedding, metadata, document)
 

@@ -51,12 +51,6 @@ chroma_migrate
 2. Choose whether the data you want to migrate is locally on disk (duckdb) or on a server (clickhouse)
 
 3. Choose where you want to write the new data to. 
-=======
-# Chroma Migrate
-
-```
-pip install chroma-migrate && chroma-migrate
-```
 
 ### Developing Locally
 Run python main.py to test locally

@@ -45,8 +45,8 @@ def run_cli():
                 word_color = colors.foreground["white"],
                 word_on_switch = colors.foreground["white"]
             ),
-            Bullet("Where is the Chroma instance you want to migrate to?",
-                choices = ["Running locally", "Running on a remote server"],
+            Bullet("Where would you like to migrate your data to?",
+                choices = ["Files I can use on my local machine with chroma, or upload to a remote server that runs chroma", "A chroma server that I can access via HTTP "],
                 bullet = " >",
                 margin = 2,
                 bullet_color = colors.bright(colors.foreground["cyan"]),

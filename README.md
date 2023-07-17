@@ -40,6 +40,8 @@ Here are the 9-possible migration paths, and any notes, if applicable.
 
 [Embed video here]()
 
+##### How to use the migration tool
+
 1. `pip` install this utility. `pip install chroma_migrate`
 
 1. Running the CLI. In your terminal run:

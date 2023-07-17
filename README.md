@@ -30,9 +30,9 @@ Here are the 9-possible migration paths, and any notes, if applicable.
 
 | From 👇&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;➡️&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;To 👉 | Persistance | Dockerized locally | Dockerized remote |
 | -------- | -------- | -------- | -------- |
-| Persistance| ✅ | ✅ | 1️⃣ |
-| Dockerized locally| ✅| 2️⃣| 1️⃣|
-| Dockerized remote| ✅| ✅| 1️⃣ 2️⃣|
+| Persistent Chroma | ✅ | ✅ | 1️⃣ |
+| Local Chroma Server| ✅| 2️⃣| 1️⃣|
+| Remote Chroma Server| ✅| ✅| 1️⃣ 2️⃣|
 
 1️⃣ - Make sure to configure any auth headers correctly
 

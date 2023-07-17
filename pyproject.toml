@@ -32,3 +32,5 @@ chroma-migrate = "chroma_migrate.cli:run_cli"
 
 [tool.setuptools]
 packages = ["chroma_migrate"]
+
+[tool.setuptools_scm]

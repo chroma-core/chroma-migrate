@@ -28,7 +28,7 @@ We are migrating:
 
 Here are the 9-possible migration paths, and any notes, if applicable.
 
-| From 👇&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;➡️&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;To 👉 | Persistance | Dockerized locally | Dockerized remote |
+| From 👇&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;➡️&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;To 👉 | Persistent Chroma | Local Chroma Server | Remote Chroma Server |
 | -------- | -------- | -------- | -------- |
 | Persistent Chroma | ✅ | ✅ | 1️⃣ |
 | Local Chroma Server| ✅| 2️⃣| 1️⃣|

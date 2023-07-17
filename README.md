@@ -50,7 +50,7 @@ Here are the 9-possible migration paths, and any notes, if applicable.
 chroma_migrate
 ```
 
-2. Choose whether the data you want to migrate is locally on disk (duckdb) or on a server (clickhouse)
+2. Choose whether the data you want to migrate is locally on disk (duckdb) on  clickhouse instance used by chroma, or directly from another chroma server
 
 3. Choose where you want to write the new data to. 
 

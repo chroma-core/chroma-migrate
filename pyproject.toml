@@ -21,6 +21,8 @@ dependencies = [
     'tqdm',
     'chromadb',
     'bullet',
+    'more-itertools >= 9.1.0',
+    'bullet >= 2.2.0',
 ]
 
 [build-system]

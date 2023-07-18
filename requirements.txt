@@ -2,3 +2,5 @@ clickhouse-connect==0.6.6
 duckdb==0.7.1
 tqdm
 chromadb >= 0.4.0
+more-itertools==9.1.0
+bullet==2.2.0

@@ -20,9 +20,8 @@ dependencies = [
     'duckdb==0.7.1',
     'tqdm',
     'chromadb',
-    'bullet',
+    'chroma-bullet',
     'more-itertools >= 9.1.0',
-    'bullet >= 2.2.0',
 ]
 
 [build-system]

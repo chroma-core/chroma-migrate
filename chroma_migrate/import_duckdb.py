@@ -72,6 +72,8 @@ def migrate_from_duckdb(api: API, persist_directory: str):
                 print(f"Failed to load metadata for embedding {id} in collection {collection_uuid}. Malformed JSON")
         else:
             metadata = None
+        if not isinstance(document, str):
+            document = None
         metadata = migrate_embedding_metadata(metadata)
         collection = collection_uuid_to_chroma_collection[collection_uuid]
         collection.add(id, embedding, metadata, document)

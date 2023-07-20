@@ -65,7 +65,13 @@ def migrate_from_duckdb(api: API, persist_directory: str):
     # Add the embeddings to the collections
     for record in tqdm(embeddings.itertuples(index=False), total=embeddings.shape[0]):
         uuid, collection_uuid, id, embedding, document, metadata = record
-        metadata = json.loads(metadata)
+        if isinstance(metadata, str):
+            try:
+                metadata = json.loads(metadata)
+            except Exception as e:
+                print(f"Failed to load metadata for embedding {id} in collection {collection_uuid}. Malformed JSON")
+        else:
+            metadata = None
         metadata = migrate_embedding_metadata(metadata)
         collection = collection_uuid_to_chroma_collection[collection_uuid]
         collection.add(id, embedding, metadata, document)

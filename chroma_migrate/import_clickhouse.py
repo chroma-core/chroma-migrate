@@ -20,7 +20,7 @@ def migrate_from_clickhouse(api: API, host: str, port: int):
 
     if len(collections) == 0:
         print("No collections found, exiting...")
-        return
+        return False
 
     print("Validating collection metadata...")
     from_collection_to_metadata = {}
@@ -58,3 +58,4 @@ def migrate_from_clickhouse(api: API, host: str, port: int):
                     pbar.update(1)
     
     print(f"Migrated {len(collections)} collections and {pbar.n} embeddings")
+    return True

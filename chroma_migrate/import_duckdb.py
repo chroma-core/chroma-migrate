@@ -30,7 +30,7 @@ def migrate_from_duckdb(api: API, persist_directory: str):
 
     if len(collections) == 0:
         print("No collections found, exiting...")
-        return
+        return False
 
     print("Validating collection metadata...")
     from_collection_to_metadata = {}
@@ -80,4 +80,5 @@ def migrate_from_duckdb(api: API, persist_directory: str):
 
     print(f"Migrated {len(collections)} collections and {embeddings.shape[0]} embeddings")
 
+    return True
 

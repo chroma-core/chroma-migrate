@@ -15,7 +15,7 @@ def migrate_from_remote_chroma(from_api: API, to_api: API):
 
     if len(from_collections) == 0:
         print("No collections found, exiting...")
-        return
+        return False
 
     print("Validating collection metadata...")
     from_collection_to_metadata = {}
@@ -50,3 +50,4 @@ def migrate_from_remote_chroma(from_api: API, to_api: API):
                 absolute_position += len(chunk)
     
     print(f"Migrated {len(from_collections)} collections and {total_embeddings} embeddings")
+    return True

@@ -79,15 +79,15 @@ def run_cli():
         prompts.append(duckdb_path)
     
     if "Chroma server" in current_config:
-        chroma_host = Input("What is the ip/hostname of your chroma server", default = "localhost", word_color = colors.foreground["yellow"])
-        chroma_port = Input("What is the port of your chroma server", default = "8000", word_color = colors.foreground["yellow"])
+        chroma_host = Input("What is the ip/hostname of your source chroma server", default = "localhost", word_color = colors.foreground["yellow"])
+        chroma_port = Input("What is the port of your source chroma server", default = "8000", word_color = colors.foreground["yellow"])
         prompts.append(chroma_host)
         prompts.append(chroma_port)
 
     if target_config == "A chroma server that I can access via HTTP":
-        chroma_host = Input("What is the ip/hostname of your chroma server", default = "localhost", word_color = colors.foreground["yellow"])
-        chroma_port = Input("What is the port of your chroma server", default = "8000", word_color = colors.foreground["yellow"])
-        chroma_headers = Input("What headers would you like to use to authenticate with your chroma server? (JSON format)", default = "{}", word_color = colors.foreground["yellow"])
+        chroma_host = Input("What is the ip/hostname of your destination chroma server", default = "localhost", word_color = colors.foreground["yellow"])
+        chroma_port = Input("What is the port of your destination chroma server", default = "8000", word_color = colors.foreground["yellow"])
+        chroma_headers = Input("What headers would you like to use to authenticate with your destination chroma server? (JSON format)", default = "{}", word_color = colors.foreground["yellow"])
         target_chroma = "REMOTE"
         prompts.append(chroma_host)
         prompts.append(chroma_port)
@@ -111,11 +111,11 @@ def run_cli():
 
     if target_chroma == "REMOTE":
         for prompt, answer in result:
-            if prompt == "What is the ip/hostname of your chroma server":
+            if prompt == "What is the ip/hostname of your destination chroma server":
                 chroma_host = answer
-            if prompt == "What is the port of your chroma server":
+            if prompt == "What is the port of your destination chroma server":
                 chroma_port = answer
-            if prompt == "What headers would you like to use to authenticate with your chroma server? (JSON format)":
+            if prompt == "What headers would you like to use to authenticate with your destination chroma server? (JSON format)":
                 try:
                     chroma_headers = json.loads(answer)
                 except Exception:
@@ -123,11 +123,12 @@ def run_cli():
                     exit(1)
         api = chromadb.HttpClient(host=chroma_host, port=chroma_port, headers=chroma_headers)
 
+    did_migration = False
     if "DuckDB" in current_config:
         for prompt, answer in result:
             if prompt == "What is the path to the persist directory your data is currently stored in?":
                 persist_directory = answer
-        migrate_from_duckdb(api, persist_directory)
+        did_migration = migrate_from_duckdb(api, persist_directory)
 
     if "Clickhouse" in current_config:
         for prompt, answer in result:
@@ -135,28 +136,29 @@ def run_cli():
                 clickhouse_host = answer
             if prompt == "What is the port of your clickhouse server":
                 clickhouse_port = answer
-        migrate_from_clickhouse(api, clickhouse_host, clickhouse_port)
+        did_migration = migrate_from_clickhouse(api, clickhouse_host, clickhouse_port)
     
     if "Chroma server" in current_config:
         for prompt, answer in result:
-            if prompt == "What is the ip/hostname of your chroma server":
-                chroma_host = answer
-            if prompt == "What is the port of your chroma server":
-                chroma_port = answer
-        from_chroma = chromadb.HttpClient(host=chroma_host, port=chroma_port)
-        migrate_from_remote_chroma(from_chroma, api)
-
-    if target_chroma == "LOCAL":
-        print(f"Your data has been migrated to: {persist_directory}!")
-        print("\n")
-        print("You can now instantiate a chroma client with the following code:")
-        print("import chromadb")
-        print("api = chromadb.PersistentClient(path=\"" + persist_directory + "\")")
+            if prompt == "What is the ip/hostname of your source chroma server":
+                chroma_source_host = answer
+            if prompt == "What is the port of your source chroma server":
+                chroma_source_port = answer
+        from_chroma = chromadb.HttpClient(host=chroma_source_host, port=chroma_source_port)
+        did_migration = migrate_from_remote_chroma(from_chroma, api)
     
-    if target_chroma == "REMOTE":
-        print(f"Your data has been migrated to: {chroma_host}:{chroma_port}!")
-        print("\n")
-        print("You can now instantiate a chroma client with the following code:")
-        print("import chromadb")
-        print("api = chromadb.HttpClient(host=\"" + chroma_host + "\", port=\"" + chroma_port + "\")")
+    if did_migration:
+        if target_chroma == "LOCAL":
+            print(f"Your data has been migrated to: {persist_directory}!")
+            print("\n")
+            print("You can now instantiate a chroma client with the following code:")
+            print("import chromadb")
+            print("api = chromadb.PersistentClient(path=\"" + persist_directory + "\")")
+        
+        if target_chroma == "REMOTE":
+            print(f"Your data has been migrated to: {chroma_host}:{chroma_port}!")
+            print("\n")
+            print("You can now instantiate a chroma client with the following code:")
+            print("import chromadb")
+            print("api = chromadb.HttpClient(host=\"" + chroma_host + "\", port=\"" + chroma_port + "\")")
 

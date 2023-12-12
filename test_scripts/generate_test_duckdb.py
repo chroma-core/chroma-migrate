@@ -2,15 +2,22 @@ import numpy as np
 import random
 
 import chromadb
-from chromadb.api import API
+
+try:
+    from chromadb.api import API
+except ImportError:
+    from chromadb.api import ServerAPI as API
 from chromadb.config import Settings
+
 
 # Run this to generate a test duckdb database
 def gen():
     persist_directory_a = "./test_data_duckdb"
-    
+
     # Create a new API
-    api: API = chromadb.Client(Settings(chroma_db_impl="duckdb+parquet", persist_directory=persist_directory_a))
+    api: API = chromadb.Client(
+        Settings(chroma_db_impl="duckdb+parquet", persist_directory=persist_directory_a)
+    )
 
     # Create a random set of collections
     for i in range(10):
@@ -24,8 +31,9 @@ def gen():
         ids = [f"id_{i}" for i in range(N)]
         collection.add(ids, embeddings, metadata, documents)
         print(f"Added {N} embeddings to collection {collection.name}")
-    
+
     api.persist()
+
 
 if __name__ == "__main__":
     gen()

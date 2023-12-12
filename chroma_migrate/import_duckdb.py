@@ -1,12 +1,20 @@
 import os
 from typing import Dict
 import duckdb
-from chromadb.api import API
+
+try:
+    from chromadb.api import API
+except ImportError:
+    from chromadb.api import ServerAPI as API
 from chromadb.api.models.Collection import Collection
 from tqdm import tqdm
 import json
 
-from chroma_migrate.utils import migrate_embedding_metadata, validate_collection_metadata
+from chroma_migrate.utils import (
+    migrate_embedding_metadata,
+    validate_collection_metadata,
+)
+
 
 def migrate_from_duckdb(api: API, persist_directory: str):
     # Load all the collections from the parquet files
@@ -17,16 +25,20 @@ def migrate_from_duckdb(api: API, persist_directory: str):
 
     print("Loading Existing Collections...")
     # Load the collections into duckdb
-    collections_parquet_path = os.path.join(persist_directory, "chroma-collections.parquet")
+    collections_parquet_path = os.path.join(
+        persist_directory, "chroma-collections.parquet"
+    )
     conn.execute(
-            "CREATE TABLE collections (uuid STRING, name STRING, metadata STRING);"
-        )
+        "CREATE TABLE collections (uuid STRING, name STRING, metadata STRING);"
+    )
     conn.execute(
         f"INSERT INTO collections SELECT * FROM read_parquet('{collections_parquet_path}');"
     )
 
     # Read the collections from duckdb
-    collections = conn.execute("SELECT uuid, name, metadata FROM collections").fetchall()
+    collections = conn.execute(
+        "SELECT uuid, name, metadata FROM collections"
+    ).fetchall()
 
     if len(collections) == 0:
         print("No collections found, exiting...")
@@ -48,10 +60,12 @@ def migrate_from_duckdb(api: API, persist_directory: str):
         collection_uuid_to_chroma_collection[uuid] = coll
 
     # -------------------------------------
-    
+
     # Load the embeddings into duckdb
     print("Migrating existing embeddings...")
-    embeddings_parquet_path = os.path.join(persist_directory, "chroma-embeddings.parquet")
+    embeddings_parquet_path = os.path.join(
+        persist_directory, "chroma-embeddings.parquet"
+    )
     conn.execute(
         "CREATE TABLE embeddings (collection_uuid STRING, uuid STRING, embedding DOUBLE[], document STRING, id STRING, metadata STRING);"
     )
@@ -60,7 +74,9 @@ def migrate_from_duckdb(api: API, persist_directory: str):
     )
 
     # Read the embeddings from duckdb
-    embeddings = conn.execute("SELECT uuid, collection_uuid, id, embedding, document, metadata FROM embeddings").fetch_df()
+    embeddings = conn.execute(
+        "SELECT uuid, collection_uuid, id, embedding, document, metadata FROM embeddings"
+    ).fetch_df()
 
     # Add the embeddings to the collections
     for record in tqdm(embeddings.itertuples(index=False), total=embeddings.shape[0]):
@@ -69,7 +85,9 @@ def migrate_from_duckdb(api: API, persist_directory: str):
             try:
                 metadata = json.loads(metadata)
             except Exception as e:
-                print(f"Failed to load metadata for embedding {id} in collection {collection_uuid}. Malformed JSON")
+                print(
+                    f"Failed to load metadata for embedding {id} in collection {collection_uuid}. Malformed JSON"
+                )
         else:
             metadata = None
         if not isinstance(document, str):
@@ -78,7 +96,8 @@ def migrate_from_duckdb(api: API, persist_directory: str):
         collection = collection_uuid_to_chroma_collection[collection_uuid]
         collection.add(id, embedding, metadata, document)
 
-    print(f"Migrated {len(collections)} collections and {embeddings.shape[0]} embeddings")
+    print(
+        f"Migrated {len(collections)} collections and {embeddings.shape[0]} embeddings"
+    )
 
     return True
-
